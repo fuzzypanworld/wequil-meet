@@ -4,7 +4,9 @@
 	"description": "A free group video conference app for the web. No sign ups. No downloads.",
 	"main": "server.js",
 	"scripts": {
-		"start": "node ./scripts/pre-start.js && node server.js",
+		"start": "node server.js",
+		"build": "node ./scripts/pre-start.js",
+		"dev": "node ./scripts/pre-start.js && node server.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",

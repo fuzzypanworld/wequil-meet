@@ -8,20 +8,27 @@ const config = require("./config");
 const signallingServer = require("./signalling-server");
 
 // Get PORT from env variable else assign 3000 for development
-const PORT = config.PORT || 3000;
+const PORT = process.env.PORT || config.PORT || 3000;
 const server = http.createServer(app);
 
 app.set("view engine", "ejs");
 
+// Serve static files
 app.use(express.static(path.join(__dirname, "node_modules/vue/dist/")));
 app.use(express.static(path.join(__dirname, "assets")));
 app.use(express.static(path.join(__dirname, "www"), { maxAge: 0 }));
 
-const io = socketIO(server);
+// Configure Socket.IO with CORS for Vercel
+const io = socketIO(server, {
+	cors: {
+		origin: config.CORS_ORIGIN.split(","),
+		methods: ["GET", "POST"]
+	}
+});
 io.sockets.on("connection", signallingServer);
 
+// Routes
 app.get("/", (req, res) => res.render("index", { page: "index", title: "A free video chat for the web." }));
-
 app.get("/faq", (req, res) => res.render("faq", { page: "faq", title: "Frequently asked questions" }));
 app.get(["/privacy", "/legal", "/terms"], (req, res) =>
 	res.render("privacy", { page: "privacy", title: "Privacy policy" })
@@ -38,7 +45,13 @@ app.get("/:channel", (req, res) => {
 
 app.use("/*", (req, res) => res.render("404", { page: "404", title: "Page not found" }));
 
-server.listen(PORT, null, () => {
-	console.log("Hello server started");
-	console.log({ port: PORT, node_version: process.versions.node });
-});
+// Start server
+if (process.env.NODE_ENV !== "production") {
+	server.listen(PORT, null, () => {
+		console.log("Development server started");
+		console.log({ port: PORT, node_version: process.versions.node });
+	});
+} else {
+	// In production (Vercel), we export the app
+	module.exports = app;
+}
