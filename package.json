@@ -1,5 +1,5 @@
 {
-	"name": "hello",
+	"name": "wequil-meet",
 	"version": "1.0.1",
 	"description": "A free group video conference app for the web. No sign ups. No downloads.",
 	"main": "server.js",
