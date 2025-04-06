@@ -12,20 +12,31 @@
         {
             "src": "assets/**",
             "use": "@vercel/static"
+        },
+        {
+            "src": "views/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/socket.io/(.*)",
-            "dest": "/server.js"
+            "dest": "server.js"
         },
         {
-            "src": "/(.+\\.[a-z]+)$",
-            "dest": "/$1"
+            "src": "/(css|js|images|fonts)/.*",
+            "dest": "/www/$0"
+        },
+        {
+            "src": "/assets/(.*)",
+            "dest": "/assets/$1"
         },
         {
             "src": "/(.*)",
             "dest": "/server.js"
         }
-    ]
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    }
 } 

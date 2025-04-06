@@ -1,0 +1,18 @@
+<%- include('head') %>
+
+<body>
+    <div class="wrap">
+        <br />
+        <div class="row title">Error</div>
+        <div class="row bold">Internal Server Error</div>
+        <div class="row">
+            <p>Sorry, something went wrong. Please try again later.</p>
+            <% if (error) { %>
+                <p class="error-message"><%= error %></p>
+            <% } %>
+            <p><a href="/" class="button">Return to Home</a></p>
+        </div>
+    </div>
+</body>
+
+<%- include('footer') %> 

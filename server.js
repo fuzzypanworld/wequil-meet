@@ -21,9 +21,11 @@ app.use(express.static(path.join(__dirname, "www"), { maxAge: 0 }));
 // Configure Socket.IO with CORS for Vercel
 const io = socketIO(server, {
 	cors: {
-		origin: config.CORS_ORIGIN.split(","),
-		methods: ["GET", "POST"]
-	}
+		origin: "*",  // Allow all origins in development
+		methods: ["GET", "POST"],
+		credentials: true
+	},
+	transports: ['websocket', 'polling']
 });
 io.sockets.on("connection", signallingServer);
 
@@ -45,13 +47,19 @@ app.get("/:channel", (req, res) => {
 
 app.use("/*", (req, res) => res.render("404", { page: "404", title: "Page not found" }));
 
-// Start server
-if (process.env.NODE_ENV !== "production") {
-	server.listen(PORT, null, () => {
-		console.log("Development server started");
-		console.log({ port: PORT, node_version: process.versions.node });
+// Error handling middleware
+app.use((err, req, res, next) => {
+	console.error(err.stack);
+	res.status(500).render("error", { 
+		page: "error",
+		title: "Internal Server Error",
+		error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
 	});
-} else {
-	// In production (Vercel), we export the app
-	module.exports = app;
-}
+});
+
+// Start server
+server.listen(PORT, () => {
+	console.log(`Server running on port ${PORT}`);
+});
+
+module.exports = app;
