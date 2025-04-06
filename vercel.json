@@ -25,7 +25,15 @@
     "routes": [
         {
             "src": "/socket.io/(.*)",
-            "dest": "server.js"
+            "dest": "/server.js"
+        },
+        {
+            "src": "/vue.global.prod.js",
+            "dest": "/server.js"
+        },
+        {
+            "src": "/adapter-latest.js",
+            "dest": "/server.js"
         },
         {
             "src": "/favicon.svg",
@@ -44,14 +52,6 @@
             "dest": "/assets/mask-icon.svg"
         },
         {
-            "src": "/vue.global.prod.js",
-            "dest": "/node_modules/vue/dist/vue.global.prod.js"
-        },
-        {
-            "src": "/adapter-latest.js",
-            "dest": "/node_modules/webrtc-adapter/out/adapter.js"
-        },
-        {
             "src": "/assets/(.*)",
             "dest": "/assets/$1"
         },
@@ -61,7 +61,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "server.js"
+            "dest": "/server.js"
         }
     ],
     "env": {

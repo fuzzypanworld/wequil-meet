@@ -18,8 +18,15 @@ app.set("view engine", "ejs");
 // Serve static files
 app.use(express.static(path.join(__dirname, "www")));
 app.use(express.static(path.join(__dirname, "assets")));
-app.use("/vue.global.prod.js", express.static(path.join(__dirname, "node_modules/vue/dist/vue.global.prod.js")));
-app.use("/adapter-latest.js", express.static(path.join(__dirname, "node_modules/webrtc-adapter/out/adapter.js")));
+
+// Serve Vue.js and adapter files
+app.get("/vue.global.prod.js", (req, res) => {
+	res.sendFile(path.join(__dirname, "node_modules/vue/dist/vue.global.prod.js"));
+});
+
+app.get("/adapter-latest.js", (req, res) => {
+	res.sendFile(path.join(__dirname, "node_modules/webrtc-adapter/out/adapter.js"));
+});
 
 // Configure Socket.IO with CORS for Vercel
 const io = socketIO(server, {
