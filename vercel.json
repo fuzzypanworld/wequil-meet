@@ -12,6 +12,14 @@
         {
             "src": "assets/**",
             "use": "@vercel/static"
+        },
+        {
+            "src": "node_modules/vue/dist/vue.global.prod.js",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "node_modules/webrtc-adapter/out/adapter.js",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -20,12 +28,36 @@
             "dest": "server.js"
         },
         {
-            "src": "/www/(.*)",
-            "dest": "/www/$1"
+            "src": "/favicon.svg",
+            "dest": "/assets/favicon.svg"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/assets/favicon.ico"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "dest": "/assets/apple-touch-icon.png"
+        },
+        {
+            "src": "/mask-icon.svg",
+            "dest": "/assets/mask-icon.svg"
+        },
+        {
+            "src": "/vue.global.prod.js",
+            "dest": "/node_modules/vue/dist/vue.global.prod.js"
+        },
+        {
+            "src": "/adapter-latest.js",
+            "dest": "/node_modules/webrtc-adapter/out/adapter.js"
         },
         {
             "src": "/assets/(.*)",
             "dest": "/assets/$1"
+        },
+        {
+            "src": "/www/(.*)",
+            "dest": "/www/$1"
         },
         {
             "src": "/(.*)",
