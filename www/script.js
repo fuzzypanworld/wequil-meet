@@ -62,23 +62,43 @@ const App = Vue.createApp({
 
 			try {
 				// Initialize media stream first
-				this.localMediaStream = await navigator.mediaDevices.getUserMedia({
-					audio: true,
-					video: true
+				const stream = await navigator.mediaDevices.getUserMedia({
+					audio: { deviceId: this.selectedAudioDeviceId },
+					video: { deviceId: this.selectedVideoDeviceId }
 				});
 				
+				// Set the media stream
+				this.localMediaStream = stream;
+				
 				// Update UI state based on actual track availability
-				const audioTracks = this.localMediaStream.getAudioTracks();
-				const videoTracks = this.localMediaStream.getVideoTracks();
+				const audioTracks = stream.getAudioTracks();
+				const videoTracks = stream.getVideoTracks();
 				
 				this.audioEnabled = audioTracks.length > 0 && audioTracks[0].enabled;
 				this.videoEnabled = videoTracks.length > 0 && videoTracks[0].enabled;
+
+				// Set up local video element
+				const localVideo = document.getElementById('localVideo');
+				if (localVideo) {
+					localVideo.srcObject = stream;
+					localVideo.muted = true; // Mute local video to prevent echo
+					localVideo.play().catch(error => {
+						console.error("Error playing local video:", error);
+						this.setToast("Error playing local video", "error");
+					});
+				} else {
+					console.error("Local video element not found");
+					this.setToast("Error setting up local video", "error");
+				}
 				
 				this.callInitiated = true;
 				window.initiateCall();
 			} catch (error) {
 				console.error("Error accessing media devices:", error);
 				this.setToast("Error accessing camera/microphone. Please check permissions.", "error");
+				this.localMediaStream = null;
+				this.audioEnabled = false;
+				this.videoEnabled = false;
 			}
 		},
 		setToast(message, type = "error") {
@@ -231,15 +251,20 @@ const setTheme = (themeColor) => {
 		navigator.serviceWorker.register("/sw.js");
 	}
 
-	await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-	const devices = await navigator.mediaDevices.enumerateDevices();
-	App.audioDevices = devices.filter((device) => device.kind === "audioinput");
-	App.videoDevices = devices.filter((device) => device.kind === "videoinput");
+	try {
+		// Initialize media devices
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		App.audioDevices = devices.filter((device) => device.kind === "audioinput");
+		App.videoDevices = devices.filter((device) => device.kind === "videoinput");
 
-	// Set default device ids
-	const defaultAudioDeviceId = App.audioDevices.find((device) => device.deviceId == "default")?.deviceId;
-	const defaultVideoDeviceId = App.videoDevices.find((device) => device.deviceId == "default")?.deviceId;
+		// Set default device ids
+		const defaultAudioDeviceId = App.audioDevices.find((device) => device.deviceId == "default")?.deviceId;
+		const defaultVideoDeviceId = App.videoDevices.find((device) => device.deviceId == "default")?.deviceId;
 
-	App.selectedAudioDeviceId = defaultAudioDeviceId ?? App.audioDevices[0].deviceId;
-	App.selectedVideoDeviceId = defaultVideoDeviceId ?? App.videoDevices[0].deviceId;
+		App.selectedAudioDeviceId = defaultAudioDeviceId ?? App.audioDevices[0]?.deviceId;
+		App.selectedVideoDeviceId = defaultVideoDeviceId ?? App.videoDevices[0]?.deviceId;
+	} catch (error) {
+		console.error("Error initializing media devices:", error);
+		App.setToast("Error initializing media devices. Please check permissions.", "error");
+	}
 })();
