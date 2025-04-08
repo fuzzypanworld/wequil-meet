@@ -99,6 +99,7 @@ const App = Vue.createApp({
 				this.localMediaStream = null;
 				this.audioEnabled = false;
 				this.videoEnabled = false;
+				this.callInitiated = false;
 			}
 		},
 		setToast(message, type = "error") {
