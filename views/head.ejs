@@ -30,12 +30,11 @@
 	<link rel="manifest" href="/manifest.json" />
 
 	<link rel="stylesheet" href="/styles.css" />
-	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
 	<% if(page === "channel") { %>
 	<script defer src="/adapter-latest.js"></script>
-	<script defer src="/socket.io/socket.io.js"></script>
-	<script defer src="/vue.global.prod.js"></script>
+	<script defer src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+	<script defer src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 	<script defer src="/socket.js"></script>
 	<script defer src="/script.js"></script>
 	<% } %>

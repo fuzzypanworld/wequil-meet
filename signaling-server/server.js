@@ -7,15 +7,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: ["https://wequil-meet.vercel.app", "http://localhost:3000"],
+        origin: "*",
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    path: '/socket.io/',
+    transports: ['websocket', 'polling']
 });
 
 // Enable CORS
 app.use(cors({
-    origin: ["https://wequil-meet.vercel.app", "http://localhost:3000"],
+    origin: "*",
     credentials: true
 }));
 
