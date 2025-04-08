@@ -55,13 +55,31 @@ const App = Vue.createApp({
 		},
 	},
 	methods: {
-		initiateCall() {
+		async initiateCall() {
 			if (!this.channelId) return alert("Invalid channel id");
 
 			if (!this.name) return alert("Please enter your name");
 
-			this.callInitiated = true;
-			window.initiateCall();
+			try {
+				// Initialize media stream first
+				this.localMediaStream = await navigator.mediaDevices.getUserMedia({
+					audio: true,
+					video: true
+				});
+				
+				// Update UI state based on actual track availability
+				const audioTracks = this.localMediaStream.getAudioTracks();
+				const videoTracks = this.localMediaStream.getVideoTracks();
+				
+				this.audioEnabled = audioTracks.length > 0 && audioTracks[0].enabled;
+				this.videoEnabled = videoTracks.length > 0 && videoTracks[0].enabled;
+				
+				this.callInitiated = true;
+				window.initiateCall();
+			} catch (error) {
+				console.error("Error accessing media devices:", error);
+				this.setToast("Error accessing camera/microphone. Please check permissions.", "error");
+			}
 		},
 		setToast(message, type = "error") {
 			this.toast = { type, message, time: new Date().getTime() };
@@ -80,7 +98,7 @@ const App = Vue.createApp({
 		toggleAudio(e) {
 			e.stopPropagation();
 			if (!this.localMediaStream) {
-				this.setToast("No media stream available", "error");
+				this.setToast("Please start the call first", "error");
 				return;
 			}
 			const audioTracks = this.localMediaStream.getAudioTracks();
@@ -94,7 +112,7 @@ const App = Vue.createApp({
 		toggleVideo(e) {
 			e.stopPropagation();
 			if (!this.localMediaStream) {
-				this.setToast("No media stream available", "error");
+				this.setToast("Please start the call first", "error");
 				return;
 			}
 			const videoTracks = this.localMediaStream.getVideoTracks();
