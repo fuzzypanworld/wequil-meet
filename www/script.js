@@ -79,12 +79,30 @@ const App = Vue.createApp({
 		},
 		toggleAudio(e) {
 			e.stopPropagation();
-			this.localMediaStream.getAudioTracks()[0].enabled = !this.localMediaStream.getAudioTracks()[0].enabled;
+			if (!this.localMediaStream) {
+				this.setToast("No media stream available", "error");
+				return;
+			}
+			const audioTracks = this.localMediaStream.getAudioTracks();
+			if (audioTracks.length === 0) {
+				this.setToast("No audio track available", "error");
+				return;
+			}
+			audioTracks[0].enabled = !audioTracks[0].enabled;
 			this.audioEnabled = !this.audioEnabled;
 		},
 		toggleVideo(e) {
 			e.stopPropagation();
-			this.localMediaStream.getVideoTracks()[0].enabled = !this.localMediaStream.getVideoTracks()[0].enabled;
+			if (!this.localMediaStream) {
+				this.setToast("No media stream available", "error");
+				return;
+			}
+			const videoTracks = this.localMediaStream.getVideoTracks();
+			if (videoTracks.length === 0) {
+				this.setToast("No video track available", "error");
+				return;
+			}
+			videoTracks[0].enabled = !videoTracks[0].enabled;
 			this.videoEnabled = !this.videoEnabled;
 		},
 		stopEvent(e) {
