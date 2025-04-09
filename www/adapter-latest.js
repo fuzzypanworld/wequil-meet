@@ -1897,6 +1897,9 @@ function shimLocalStreamsAPI(window) {
       if (!this._localStreams.includes(stream)) {
         this._localStreams.push(stream);
       }
+      if (stream === undefined) {
+        return;
+        }
       // Try to emulate Chrome's behaviour of adding in audio-video order.
       // Safari orders by track id.
       stream.getAudioTracks().forEach(function (track) {
