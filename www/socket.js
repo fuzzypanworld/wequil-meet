@@ -3,7 +3,7 @@
 
 const SIGNALLING_SERVER = window.location.hostname === 'localhost' 
 	? 'http://localhost:3001' 
-	: 'https://wequil-meet.railway.internal';
+	: window.location.origin;
 const ICE_SERVERS = [
 	{ urls: "stun:stun.l.google.com:19302" },
 	{ urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },

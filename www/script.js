@@ -66,9 +66,10 @@ const App = Vue.createApp({
 					audio: { deviceId: this.selectedAudioDeviceId },
 					video: { deviceId: this.selectedVideoDeviceId }
 				});
-				
+				if (!stream) return alert("Failed to start stream")
 				// Set the media stream
 				this.localMediaStream = stream;
+
 				
 				// Update UI state based on actual track availability
 				const audioTracks = stream.getAudioTracks();
@@ -77,22 +78,28 @@ const App = Vue.createApp({
 				this.audioEnabled = audioTracks.length > 0 && audioTracks[0].enabled;
 				this.videoEnabled = videoTracks.length > 0 && videoTracks[0].enabled;
 
-				// Set up local video element
-				const localVideo = document.getElementById('localVideo');
-				if (localVideo) {
-					localVideo.srcObject = stream;
-					localVideo.muted = true; // Mute local video to prevent echo
-					localVideo.play().catch(error => {
-						console.error("Error playing local video:", error);
-						this.setToast("Error playing local video", "error");
-					});
-				} else {
-					console.error("Local video element not found");
-					this.setToast("Error setting up local video", "error");
-				}
-				
+				// Set call state first to ensure DOM elements are rendered
 				this.callInitiated = true;
-				window.initiateCall();
+				
+				// Wait for Vue to update the DOM
+				this.$nextTick(() => {
+					// Set up local video element
+					const localVideo = document.getElementById('localVideo');
+					if (localVideo) {
+						localVideo.srcObject = stream;
+						localVideo.muted = true; // Mute local video to prevent echo
+						localVideo.play().catch(error => {
+							console.error("Error playing local video:", error);
+							this.setToast("Error playing local video", "error");
+						});
+					} else {
+						console.error("Local video element not found");
+						this.setToast("Error setting up local video", "error");
+					}
+					
+					// Call the window.initiateCall function only after video element has been set up
+					window.initiateCall();
+				});
 			} catch (error) {
 				console.error("Error accessing media devices:", error);
 				this.setToast("Error accessing camera/microphone. Please check permissions.", "error");
@@ -137,6 +144,7 @@ const App = Vue.createApp({
 				return;
 			}
 			const videoTracks = this.localMediaStream.getVideoTracks();
+
 			if (videoTracks.length === 0) {
 				this.setToast("No video track available", "error");
 				return;
